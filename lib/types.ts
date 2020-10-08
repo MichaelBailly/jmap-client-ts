@@ -1,14 +1,25 @@
+import { Type } from "typescript";
+
 export namespace Jmap {
+
+    export type TypeMap = {
+        ["Mailbox/get"]: Jmap.Mailbox,
+    };
+
     /**
      * [ name, arguments, id ]
      */
     export type Invocation = [
-        string,
-        {
-            [name: string]: any;
-        },
-        string
+        name: keyof TypeMap,
+        args: {[argumentName: string]: any},
+        id: string
     ]
+
+    export type GetArguments<Properties> = {
+        accountId: string;
+        ids: string[];
+        properties: Properties[] | null;
+    }
 
     export type Request = {
         using: string[];
