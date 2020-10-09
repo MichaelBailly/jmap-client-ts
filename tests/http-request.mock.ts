@@ -1,8 +1,8 @@
-import { HttpRequest } from "../lib/http-request";
+import { HttpRequest } from "../src/http-request";
 
 class HttpRequestMock extends HttpRequest {
-    MOCK_SESSION_URL = "MOCK_SESSION_URL";
-    MOCK_SESSION = {
+    public MOCK_SESSION_URL = "MOCK_SESSION_URL";
+    public MOCK_SESSION = {
         capabilities: null,
         accounts: { "MOCK_ACCOUNT_ID": null },
         primaryAccounts: { "MOCK_ACCOUNT_ID": null },
@@ -15,7 +15,7 @@ class HttpRequestMock extends HttpRequest {
     };
 
 
-    post(url, content) {
+    public post(url, content) {
         if (url !== this.MOCK_SESSION.apiUrl) {
             return Promise.reject("Wrong api url for mocks")
         }
@@ -56,7 +56,7 @@ class HttpRequestMock extends HttpRequest {
 
     }
 
-    get(url) {
+    public get(url) {
         if (url !== this.MOCK_SESSION_URL) {
             return Promise.reject("Wrong session url for mocks")
         }
