@@ -6,15 +6,15 @@ export interface ITypeMap {
  * [ name, arguments, id ]
  */
 export type IInvocation = [
-  name: keyof ITypeMap,
-  args: { [argumentName: string]: any },
-  id: string
+  keyof ITypeMap,
+  { [argumentName: string]: any },
+  string
 ];
 
 export interface IGetArguments<Properties> {
   accountId: string;
-  ids: string[];
-  properties: Properties[] | null;
+  ids: string[] | null;
+  properties?: Properties[];
 }
 
 export interface IRequest {
@@ -91,29 +91,38 @@ export interface IThread {
   deleted: Date | null;
 }
 
-export interface IMailbox {
-  id: string;
-  name: string;
-  parentId: string | null;
-  role: string;
-  sortOrder: number;
+export interface IMailbox extends IMailboxProperties, IMailboxData { }
+
+export interface IMailboxData {
+  createdModSeq: number;
+  updatedModSeq: number;
+  updatedNotCounrsModSeq: number;
+  highestUID: number;
+  emailHighestModSeq: number;
+  emailListLowModSeq: number;
+}
+
+export interface IMailboxRights {
   mayReadItems: boolean;
   mayAddItems: boolean;
   mayRemoveItems: boolean;
   mayCreateChild: boolean;
   mayRename: boolean;
   mayDelete: boolean;
+}
+
+export interface IMailboxProperties {
+  id: string;
+  name: string;
+  parentId?: string;
+  role: string;
+  sortOrder: number;
+  myRights: IMailboxRights;
   totalEmails: number;
   unreadEmails: number;
   totalThreads: number;
   unreadThreads: number;
-  createdModSeq: number;
-  updatedModSeq: number;
-  updatedNotCounrsModSeq: number;
-  deleted: Date | null;
-  highestUID: number;
-  emailHighestModSeq: number;
-  emailListLowModSeq: number;
+  deleted?: Date;
 }
 
 export interface IMaiboxEmailList {

@@ -1,6 +1,5 @@
-import { stringify } from 'querystring';
 import { HttpRequest } from './http-request';
-import { IInvocation, ISession, ITypeMap } from './types';
+import { IGetArguments, IInvocation, IMailbox, ISession, ITypeMap } from './types';
 
 export class Client {
   private httpRequest: HttpRequest;
@@ -9,8 +8,6 @@ export class Client {
   private apiUrl: string | null = null;
 
   private accessToken: string;
-
-  private session: ISession | null = null;
 
   private methodCalls: IInvocation[] = [];
 
@@ -37,36 +34,61 @@ export class Client {
       this.accessToken,
       this.sessionUrl
     ) as Promise<ISession>;
+    sessionPromise.then((session) => {
+      if (!this.apiUrl) {
+        this.apiUrl = session.apiUrl;
+
+      }
+    });
     return sessionPromise;
   }
 
-  public clearSession() {
-    this.session = null;
-  }
-
-  public invoke() {
-    if (this.session === null) {
-      throw new Error('The session should be fetch before ');
+  // TODO Type the response
+  public mailbox_get(args: IGetArguments<IMailbox>, id?: string): Promise<{
+    sessionState: string,
+    methodResponses: [
+      [
+        "Mailbox/get",
+        {
+          accountId: string,
+          state: string,
+          list: IMailbox[],
+          notFound: string
+        },
+        string
+      ]
+    ]
+  }> {
+    if (!this.apiUrl) {
+      throw new Error('Unknown api url');
     }
-    const result = this.httpRequest.post(
-      this.accessToken,
-      this.apiUrl ? this.apiUrl : this.session.apiUrl,
-      this.methodCalls
-    );
-
-    this.methodCalls = [];
-
-    return result;
-  }
-
-  public chain(
-    methodName: keyof ITypeMap,
-    args: {
-      [argumentName: string]: any;
-    },
-    id: string
-  ) {
-    this.methodCalls.push([methodName, args, id]);
-    return this;
+    return this.httpRequest.post(this.accessToken, this.apiUrl, {
+      using:
+        [
+          "urn:ietf:params:jmap:core",
+          "urn:ietf:params:jmap:mail"
+        ],
+      methodCalls: [
+        [
+          "Mailbox/get",
+          args,
+          id
+        ]
+      ]
+    }) as Promise<{
+      sessionState: string,
+      methodResponses: [
+        [
+          "Mailbox/get",
+          {
+            accountId: string,
+            state: string,
+            list: IMailbox[],
+            notFound: string
+          },
+          string
+        ]
+      ]
+    }>;
   }
 }
