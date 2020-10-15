@@ -91,7 +91,7 @@ export interface IThread {
   deleted: Date | null;
 }
 
-export interface IMailbox extends IMailboxProperties, IMailboxData { }
+export interface IMailbox extends IMailboxProperties, IMailboxData {}
 
 export interface IMailboxData {
   createdModSeq: number;

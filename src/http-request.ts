@@ -2,31 +2,42 @@ export class HttpRequest {
   // constructor() { }
 
   public post(accessToken: string, url: string, content: object) {
-    return this.request(accessToken, url, 'POST', content);
+    return this.request({ accessToken, url, method: 'POST', body: content });
   }
 
   public get(accessToken: string, url: string) {
-    return this.request(accessToken, url, 'GET');
+    return this.request({ accessToken, url, method: 'GET' });
   }
 
-  private request(
-    accessToken: string,
-    url: string,
-    method: 'POST' | 'GET',
-    body?: object
-  ) {
+  private request({
+    accessToken,
+    url,
+    method,
+    body,
+    headers,
+  }: {
+    accessToken: string;
+    url: string;
+    method: 'POST' | 'GET';
+    body?: object;
+    headers?: { [headerName: string]: string };
+  }) {
     return new Promise((resolve, reject) => {
       const request = new XMLHttpRequest();
 
       request.open(method, url);
 
-      // TODO Header modified due to openpaas bug
-      // request.setRequestHeader("Accept", "application/json;jmapVersion=rfc-8620")
       request.setRequestHeader(
         'Accept',
-        'application/json;jmapVersion=rfc-8621'
+        headers?.Accept
+          ? headers.accept
+          : 'application/json;jmapVersion=rfc-8620'
       );
-      request.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+
+      request.setRequestHeader(
+        'Authorization',
+        headers?.Authorization ? headers.Authorization : `Bearer ${accessToken}`
+      );
 
       request.onload = () => {
         const status = request.status;
@@ -35,6 +46,11 @@ export class HttpRequest {
         } else {
           reject(request.responseText);
         }
+      };
+
+      const stringRequest = JSON.stringify(request);
+      request.onerror = () => {
+        reject(stringRequest);
       };
 
       if (body) {
