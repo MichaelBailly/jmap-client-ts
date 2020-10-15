@@ -11,7 +11,8 @@
   },
   "files": [
     "lib/**/*",
-    "src/**/*"
+    "src/**/*",
+    "tsconfig.json"
   ],
   "directories": {
     "lib": "src",
