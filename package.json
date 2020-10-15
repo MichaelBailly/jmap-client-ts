@@ -10,7 +10,8 @@
     "test": "mocha -r ts-node/register -r jsdom-global/register **/*.spec.ts"
   },
   "files": [
-    "lib/**/*"
+    "lib/**/*",
+    "src/**/*"
   ],
   "directories": {
     "lib": "src",
